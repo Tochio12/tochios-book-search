@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Jumbotron, Container, CardColumns, Card, Button } from 'react-bootstrap';
 
 // import useMutation hook to execute the REMOVE_BOOK mutation in the handleDeleteBook() function instead of the deleteBook() function imported from the API file
