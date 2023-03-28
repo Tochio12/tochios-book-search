@@ -28,49 +28,70 @@ const resolvers = {
   Mutation: {
     // define the addUser mutation
     addUser: async (parent, args) => {
-      // create a new user with the User model's create method
-      const user = await User.create(args);
-      // create a token for the new user with the signToken function
-      const token = signToken(user);
-      // return an Auth object that consists of the token and the user
-      return { token, user };
+      try {
+        console.log("Adding user")
+        console.log(args)
+        // create a new user with the User model's create method
+        const user = await User.create(args);
+        // create a token for the new user with the signToken function
+        const token = signToken(user);
+        // return an Auth object that consists of the token and the user
+        return { token, user };
+      } catch (error) {
+        console.log(error)
+      }
     },
     // define the login mutation
     login: async (parent, { email, password }) => {
       // find a user in the database by their email
-      const user = await User.findOne({ email });
-      // if there is no user, throw an AuthenticationError
-      if (!user) {
-        throw new AuthenticationError("Incorrect credentials");
+      try {
+        console.log("attemtping to log in")
+        console.log(email)
+        console.log(password)
+        const user = await User.findOne({ email });
+        // if there is no user, throw an AuthenticationError
+        if (!user) {
+          throw new AuthenticationError("Incorrect credentials");
+        }
+        // if there is a user, check their password with the isCorrectPassword instance method
+        const correctPw = await user.isCorrectPassword(password);
+  
+        if (!correctPw) {
+          throw new AuthenticationError("Incorrect credentials");
+        }
+        // if the password is correct, create a token for the user with the signToken function
+        const token = signToken(user);
+        // return an Auth object that consists of the token and the user
+        return { token, user };
+      } catch (error) {
+        console.log(error)
       }
-      // if there is a user, check their password with the isCorrectPassword instance method
-      const correctPw = await user.isCorrectPassword(password);
-
-      if (!correctPw) {
-        throw new AuthenticationError("Incorrect credentials");
-      }
-      // if the password is correct, create a token for the user with the signToken function
-      const token = signToken(user);
-      // return an Auth object that consists of the token and the user
-      return { token, user };
+     
     },
     // define the saveBook mutation
     saveBook: async (parent, { bookData }, context) => {
-        // if there is a user on the context, execute the following code
-        if (context.user) {
-            // find the user in the database by their _id
-            const updatedUser = await User.findOneAndUpdate(
-                { _id: context.user._id },
-                // add the book to the user's savedBooks array
-                { $push: { savedBooks: bookData } },
-                // return the updated user
-                { new: true }
-            );
-            // return the updated user
-            return updatedUser;
-        }
-        // if there is no user on the context, throw an AuthenticationError
-        throw new AuthenticationError("You need to be logged in!");
+      try {
+        console.log("saving book")
+        console.log(bookData)
+            // if there is a user on the context, execute the following code
+            if (context.user) {
+              // find the user in the database by their _id
+              const updatedUser = await User.findOneAndUpdate(
+                  { _id: context.user._id },
+                  // add the book to the user's savedBooks array
+                  { $push: { savedBooks: bookData } },
+                  // return the updated user
+                  { new: true }
+              );
+              // return the updated user
+              return updatedUser;
+          }
+          // if there is no user on the context, throw an AuthenticationError
+          throw new AuthenticationError("You need to be logged in!");
+      } catch (error) {
+        console.log(error)
+      }
+    
     },
     // define the removeBook mutation
     removeBook: async (parent, { bookId }, context) => {
