@@ -76,7 +76,7 @@ const resolvers = {
             // if there is a user on the context, execute the following code
             if (context.user) {
               // find the user in the database by their _id
-              const updatedUser = await User.findOneAndUpdate(
+              const updatedUser = await User.findByIdAndUpdate(
                   { _id: context.user._id },
                   // add the book to the user's savedBooks array
                   { $push: { savedBooks: bookData } },
